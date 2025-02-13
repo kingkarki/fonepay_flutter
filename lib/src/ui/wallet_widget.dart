@@ -44,23 +44,30 @@ class _FonePayPageState extends State<FonePayPage> {
 
   bool _isLoading = true;
 
-  InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
-      crossPlatform: InAppWebViewOptions(
-        useShouldOverrideUrlLoading: true,
-        mediaPlaybackRequiresUserGesture: false,
-      ),
-      android: AndroidInAppWebViewOptions(
-        useHybridComposition: true,
-      ),
-      ios: IOSInAppWebViewOptions(
-        allowsInlineMediaPlayback: true,
-      ));
+  // InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
+  //     crossPlatform: InAppWebViewOptions(
+  //       useShouldOverrideUrlLoading: true,
+  //       mediaPlaybackRequiresUserGesture: false,
+  //     ),
+  //     android: AndroidInAppWebViewOptions(
+  //       useHybridComposition: true,
+  //     ),
+  //     ios: IOSInAppWebViewOptions(
+  //       allowsInlineMediaPlayback: true,
+  //     ));
+
+  InAppWebViewSettings options = InAppWebViewSettings(
+    mediaPlaybackRequiresUserGesture: false,
+    useShouldOverrideUrlLoading: true,
+    useHybridComposition: true,
+    allowsInlineMediaPlayback: true,
+  );
 
   // Generates the URLRequest object for the FonePay payment page.
   URLRequest getURLRequest() {
     var url =
         "${fonePayConfig.serverUrl}PID=${fonePayConfig.pid}&MD=${fonePayConfig.md}&AMT=${fonePayConfig.amt}&CRN=${fonePayConfig.crn}&DT=${fonePayConfig.dt}&R1=${fonePayConfig.r1}&R2=${fonePayConfig.r2}&DV=${fonePayConfig.dv}&RU=${fonePayConfig.ru}&PRN=${fonePayConfig.prn}";
-    var urlRequest = URLRequest(url: Uri.tryParse(url));
+    var urlRequest = URLRequest(url: WebUri(url));
     return urlRequest;
   }
 
@@ -75,7 +82,8 @@ class _FonePayPageState extends State<FonePayPage> {
       body: Stack(
         children: [
           InAppWebView(
-            initialOptions: options,
+            // initialOptions: options,
+            initialSettings: options,
             initialUrlRequest: paymentRequest,
             onWebViewCreated: (webViewController) {
               setState(() {
@@ -125,7 +133,8 @@ class _FonePayPageState extends State<FonePayPage> {
 
               return NavigationActionPolicy.ALLOW;
             },
-            onLoadError: (controller, url, code, message) {},
+            // onLoadError: (controller, url, code, message) {},
+            onReceivedError: (controller, request, error) {},
             onConsoleMessage: (controller, consoleMessage) {},
           ),
           if (_isLoading)
